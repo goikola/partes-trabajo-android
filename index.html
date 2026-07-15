@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#174f7a">
+  <meta name="description" content="Parte de trabajo para conductores de Carnes Erdella">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <title>Partes de trabajo</title>
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <p class="eyebrow">CARNES ERDELLA, S.L.</p>
+      <h1>Parte de trabajo</h1>
+    </div>
+    <button id="installButton" class="secondary compact" hidden>Instalar</button>
+  </header>
+
+  <main>
+    <section class="panel form-panel" aria-labelledby="formTitle">
+      <div class="section-heading">
+        <div>
+          <h2 id="formTitle">Nueva jornada</h2>
+          <p>Los datos se guardan en este dispositivo.</p>
+        </div>
+        <button id="newButton" class="text-button" type="button">Limpiar</button>
+      </div>
+
+      <form id="workForm">
+        <input id="recordId" type="hidden">
+        <div class="form-grid">
+          <label>
+            <span>Fecha</span>
+            <input id="date" type="date" required>
+          </label>
+          <label>
+            <span>Nombre / conductor</span>
+            <select id="worker" required>
+              <option value="">Seleccionar trabajador…</option>
+            </select>
+          </label>
+          <label>
+            <span>Matrícula</span>
+            <select id="vehicle" required>
+              <option value="">Seleccionar matrícula…</option>
+            </select>
+            <small id="vehicleType"></small>
+          </label>
+          <label class="wide">
+            <span>Ruta</span>
+            <input id="route" type="text" autocomplete="off" placeholder="Ej.: Carga Sigüeiro" required>
+          </label>
+          <label>
+            <span>Hora inicio</span>
+            <input id="startTime" class="start-field" type="time" required>
+          </label>
+          <label>
+            <span>Hora fin</span>
+            <input id="endTime" class="end-field" type="time" required>
+          </label>
+          <label>
+            <span>Km iniciales</span>
+            <input id="startKm" type="number" min="0" step="1" inputmode="numeric" required>
+          </label>
+          <label>
+            <span>Km finales</span>
+            <input id="endKm" type="number" min="0" step="1" inputmode="numeric" required>
+          </label>
+          <label class="wide">
+            <span>Observaciones</span>
+            <textarea id="notes" rows="2" placeholder="Opcional"></textarea>
+          </label>
+        </div>
+
+        <div class="calculated" aria-live="polite">
+          <div><span>Horas</span><strong id="duration">—</strong></div>
+          <div><span>Km realizados</span><strong id="distance">—</strong></div>
+        </div>
+
+        <div id="formMessage" class="message" role="status" hidden></div>
+        <button class="primary save-button" type="submit">Guardar parte</button>
+      </form>
+    </section>
+
+    <section class="panel records-panel" aria-labelledby="recordsTitle">
+      <div class="section-heading">
+        <div>
+          <h2 id="recordsTitle">Partes guardados</h2>
+          <p id="recordCount">0 registros</p>
+        </div>
+      </div>
+      <div class="filters">
+        <label>
+          <span>Filtrar por mes</span>
+          <input id="monthFilter" type="month">
+        </label>
+        <button id="clearFilter" class="secondary" type="button">Ver todos</button>
+      </div>
+      <div id="recordsList" class="records-list"></div>
+      <div id="emptyState" class="empty-state">
+        <strong>Aún no hay partes</strong>
+        <span>Guarda la primera jornada usando el formulario.</span>
+      </div>
+      <div class="actions">
+        <button id="exportButton" class="primary" type="button">Exportar a Excel</button>
+      </div>
+    </section>
+  </main>
+
+  <template id="recordTemplate">
+    <article class="record-card">
+      <div class="record-top">
+        <div>
+          <strong class="record-date"></strong>
+          <span class="record-worker"></span>
+        </div>
+        <span class="record-plate"></span>
+      </div>
+      <p class="record-route"></p>
+      <div class="record-metrics">
+        <span><b class="record-time"></b><small>Horario</small></span>
+        <span><b class="record-duration"></b><small>Duración</small></span>
+        <span><b class="record-km"></b><small>Kilómetros</small></span>
+      </div>
+      <p class="record-notes"></p>
+      <div class="record-actions">
+        <button class="edit-record text-button" type="button">Editar</button>
+        <button class="share-record text-button" type="button">Compartir</button>
+        <button class="delete-record danger-button" type="button">Eliminar</button>
+      </div>
+    </article>
+  </template>
+
+  <script src="data.js"></script>
+  <script src="xlsx-export.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
