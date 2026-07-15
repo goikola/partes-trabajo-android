@@ -1,0 +1,15 @@
+{
+  "name": "Partes de trabajo · Carnes Erdella",
+  "short_name": "Partes Erdella",
+  "description": "Registro móvil de rutas, horas y kilómetros",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f3f6f8",
+  "theme_color": "#174f7a",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
