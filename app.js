@@ -2,6 +2,7 @@
   "use strict";
   const STORAGE_KEY = "carnes-erdella-partes-v1";
   const AUTH_KEY = "carnes-erdella-autorizado-v1";
+  const LAST_WORKER_KEY = "carnes-erdella-ultimo-trabajador-v1";
   const ACCESS_USER = "goikola";
   const ACCESS_PASSWORD = "2828";
   const $ = (id) => document.getElementById(id);
@@ -73,6 +74,8 @@
     form.reset();
     fields.id.value = "";
     fields.date.value = todayLocal();
+    const lastWorker = localStorage.getItem(LAST_WORKER_KEY);
+    if (lastWorker && APP_DATA.workers.includes(lastWorker)) fields.worker.value = lastWorker;
     $("formTitle").textContent = "Nueva jornada";
     $("vehicleType").textContent = "";
     $("formMessage").hidden = true;
@@ -124,6 +127,7 @@
     const index = records.findIndex(item => item.id === record.id);
     if (index >= 0) records[index] = record; else records.push(record);
     writeRecords(records);
+    localStorage.setItem(LAST_WORKER_KEY, record.worker);
     resetForm();
     showMessage(index >= 0 ? "Parte actualizado correctamente." : "Parte guardado correctamente.");
     renderRecords();
