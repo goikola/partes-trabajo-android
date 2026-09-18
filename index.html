@@ -7,7 +7,7 @@
   <meta name="description" content="Parte de trabajo para conductores de Carnes Erdella">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="styles.css?v=4">
+  <link rel="stylesheet" href="styles.css?v=5">
   <title>Partes de trabajo</title>
 </head>
 <body class="auth-locked">
@@ -41,6 +41,12 @@
   </header>
 
   <main>
+    <nav class="app-tabs" aria-label="Secciones de la aplicación">
+      <button id="workTabButton" class="app-tab active" type="button">Partes</button>
+      <button id="adminTabButton" class="app-tab" type="button">Administración</button>
+    </nav>
+
+    <div id="workView">
     <section class="panel form-panel" aria-labelledby="formTitle">
       <div class="section-heading">
         <div>
@@ -129,6 +135,46 @@
         <button id="exportButton" class="primary" type="button">Exportar a Excel</button>
       </div>
     </section>
+    </div>
+
+    <section id="adminView" class="panel admin-panel" aria-labelledby="adminTitle" hidden>
+      <div class="section-heading">
+        <div>
+          <h2 id="adminTitle">Administración</h2>
+          <p>Gestiona los trabajadores guardados en este dispositivo.</p>
+        </div>
+      </div>
+
+      <form id="adminLoginForm" class="admin-login">
+        <label>
+          <span>Usuario administrador</span>
+          <input id="adminUser" type="text" autocomplete="username" required>
+        </label>
+        <label>
+          <span>Clave</span>
+          <input id="adminPassword" type="password" autocomplete="current-password" inputmode="numeric" required>
+        </label>
+        <div id="adminLoginError" class="message login-error" role="alert" hidden></div>
+        <button class="primary" type="submit">Entrar en administración</button>
+      </form>
+
+      <div id="adminManager" hidden>
+        <form id="adminWorkerForm" class="admin-add-form">
+          <label>
+            <span>Nuevo trabajador</span>
+            <input id="adminWorkerName" type="text" autocomplete="off" placeholder="APELLIDOS Y NOMBRE" required>
+          </label>
+          <button class="primary" type="submit">Añadir trabajador</button>
+        </form>
+        <div id="adminMessage" class="message" role="status" hidden></div>
+        <div class="admin-list-heading">
+          <strong>Trabajadores</strong>
+          <span id="adminWorkerCount"></span>
+        </div>
+        <div id="adminWorkerList" class="admin-worker-list"></div>
+        <button id="resetWorkersButton" class="secondary admin-reset" type="button">Restablecer lista original</button>
+      </div>
+    </section>
   </main>
 
   <template id="recordTemplate">
@@ -155,8 +201,8 @@
     </article>
   </template>
 
-  <script src="data.js"></script>
+  <script src="data.js?v=2"></script>
   <script src="xlsx-export.js?v=2"></script>
-  <script src="app.js?v=5"></script>
+  <script src="app.js?v=6"></script>
 </body>
 </html>
