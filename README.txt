@@ -21,6 +21,7 @@ INSTALACIÓN EN ANDROID
 IMPORTANTE
 - Los partes de trabajo se almacenan únicamente en el navegador del teléfono.
 - Los trabajadores y camiones se comparten entre todos los dispositivos.
+- La aplicación consulta la lista más reciente al abrirla o volver a primer plano.
 - Hace falta conexión a Internet para recibir o guardar cambios de Administración; la última lista recibida queda disponible sin conexión.
 - Antes de borrar datos de Chrome o cambiar de móvil, use "Exportar a Excel".
 

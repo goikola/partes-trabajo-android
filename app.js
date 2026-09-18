@@ -23,6 +23,8 @@
   let adminToken = "";
   let sharedWorkers = null;
   let sharedVehicles = null;
+  let catalogRefreshPromise = null;
+  let lastCatalogRefresh = 0;
 
   function unlockApp() {
     document.body.classList.remove("auth-locked");
@@ -100,6 +102,15 @@
     if (!validCatalog(catalog)) return false;
     applyCatalog(catalog.workers, catalog.vehicles);
     return true;
+  }
+  function refreshSharedCatalog(force = false) {
+    if (catalogRefreshPromise) return catalogRefreshPromise;
+    if (!force && Date.now() - lastCatalogRefresh < 5000) return Promise.resolve(false);
+    lastCatalogRefresh = Date.now();
+    catalogRefreshPromise = fetchSharedCatalog()
+      .catch(() => false)
+      .finally(() => { catalogRefreshPromise = null; });
+    return catalogRefreshPromise;
   }
   async function signInAdmin(password) {
     const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${FIREBASE_API_KEY}`, {
@@ -372,7 +383,7 @@
   fillSelects();
   resetForm();
   renderRecords();
-  fetchSharedCatalog().catch(() => {});
+  refreshSharedCatalog(true);
   form.addEventListener("submit", saveRecord);
   $("newButton").addEventListener("click", resetForm);
   [fields.startTime, fields.endTime, fields.startKm, fields.endKm].forEach(el => el.addEventListener("input", refreshCalculations));
@@ -396,7 +407,7 @@
     button.textContent = "Conectando…";
     try {
       adminToken = await signInAdmin($("adminPassword").value);
-      const exists = await fetchSharedCatalog();
+      const exists = await refreshSharedCatalog(true);
       if (!exists) await saveSharedCatalog(APP_DATA.workers, APP_DATA.vehicles);
       adminUnlocked = true;
       $("adminLoginError").hidden = true;
@@ -467,6 +478,12 @@
       showAdminMessage("Lista original de camiones restablecida para todos.");
     } catch { showAdminMessage("No se pudo guardar. Comprueba la conexión a Internet.", true); }
     finally { $("resetVehiclesButton").disabled = false; }
+  });
+
+  window.addEventListener("focus", () => refreshSharedCatalog());
+  window.addEventListener("pageshow", () => refreshSharedCatalog(true));
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") refreshSharedCatalog();
   });
 
   window.addEventListener("beforeinstallprompt", event => {
