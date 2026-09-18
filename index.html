@@ -7,7 +7,7 @@
   <meta name="description" content="Parte de trabajo para conductores de Carnes Erdella">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="styles.css?v=5">
+  <link rel="stylesheet" href="styles.css?v=6">
   <title>Partes de trabajo</title>
 </head>
 <body class="auth-locked">
@@ -141,7 +141,7 @@
       <div class="section-heading">
         <div>
           <h2 id="adminTitle">Administración</h2>
-          <p>Gestiona los trabajadores guardados en este dispositivo.</p>
+          <p>Gestiona los trabajadores y camiones guardados en este dispositivo.</p>
         </div>
       </div>
 
@@ -172,7 +172,27 @@
           <span id="adminWorkerCount"></span>
         </div>
         <div id="adminWorkerList" class="admin-worker-list"></div>
-        <button id="resetWorkersButton" class="secondary admin-reset" type="button">Restablecer lista original</button>
+        <button id="resetWorkersButton" class="secondary admin-reset" type="button">Restablecer trabajadores originales</button>
+
+        <hr class="admin-divider">
+
+        <form id="adminVehicleForm" class="admin-add-form admin-vehicle-form">
+          <label>
+            <span>Nueva matrícula</span>
+            <input id="adminVehiclePlate" type="text" autocomplete="off" autocapitalize="characters" placeholder="1234ABC" required>
+          </label>
+          <label>
+            <span>Tipo de camión</span>
+            <input id="adminVehicleType" type="text" autocomplete="off" placeholder="Opcional">
+          </label>
+          <button class="primary" type="submit">Añadir camión</button>
+        </form>
+        <div class="admin-list-heading">
+          <strong>Camiones</strong>
+          <span id="adminVehicleCount"></span>
+        </div>
+        <div id="adminVehicleList" class="admin-worker-list"></div>
+        <button id="resetVehiclesButton" class="secondary admin-reset" type="button">Restablecer camiones originales</button>
       </div>
     </section>
   </main>
@@ -203,6 +223,6 @@
 
   <script src="data.js?v=2"></script>
   <script src="xlsx-export.js?v=2"></script>
-  <script src="app.js?v=6"></script>
+  <script src="app.js?v=7"></script>
 </body>
 </html>

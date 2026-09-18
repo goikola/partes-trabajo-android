@@ -101,6 +101,8 @@ input:focus, select:focus, textarea:focus { border-color: var(--blue); box-shado
 .admin-login { display: grid; gap: 15px; max-width: 430px; }
 .admin-add-form { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 10px; }
 .admin-add-form .primary { white-space: nowrap; }
+.admin-vehicle-form { grid-template-columns: 1fr 1fr auto; }
+.admin-divider { margin: 24px 0; border: 0; border-top: 1px solid var(--line); }
 .admin-list-heading { display: flex; justify-content: space-between; align-items: center; margin: 20px 0 10px; }
 .admin-list-heading span { color: var(--muted); font-size: .82rem; }
 .admin-worker-list { display: grid; gap: 7px; max-height: 55vh; overflow: auto; padding-right: 3px; }
@@ -121,6 +123,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--blue); box-shado
   .record-metrics b { font-size: .76rem; }
   .record-actions { justify-content: space-between; }
   .admin-add-form { grid-template-columns: 1fr; }
+  .admin-vehicle-form { grid-template-columns: 1fr; }
 }
 
 @media print {

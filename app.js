@@ -4,6 +4,7 @@
   const AUTH_KEY = "carnes-erdella-autorizado-v1";
   const LAST_WORKER_KEY = "carnes-erdella-ultimo-trabajador-v1";
   const WORKERS_KEY = "carnes-erdella-trabajadores-v1";
+  const VEHICLES_KEY = "carnes-erdella-camiones-v1";
   const ACCESS_USER = "goikola";
   const ACCESS_PASSWORD = "2828";
   const ADMIN_USER = "soraya";
@@ -46,6 +47,8 @@
   };
   const writeRecords = (records) => localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
   const normalizeWorker = (value) => String(value ?? "").trim().replace(/\s+/g, " ").toUpperCase();
+  const normalizePlate = (value) => String(value ?? "").trim().replace(/\s+/g, "").toUpperCase();
+  const normalizeVehicleType = (value) => String(value ?? "").trim().replace(/\s+/g, " ");
   function readWorkers() {
     try {
       const saved = JSON.parse(localStorage.getItem(WORKERS_KEY));
@@ -57,6 +60,27 @@
     localStorage.setItem(WORKERS_KEY, JSON.stringify([...new Set(workers.map(normalizeWorker).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"))));
     fillWorkerSelect();
     renderAdminWorkers();
+  }
+  function normalizeVehicles(vehicles) {
+    const unique = new Map();
+    for (const vehicle of vehicles) {
+      const plate = normalizePlate(Array.isArray(vehicle) ? vehicle[0] : vehicle?.plate);
+      const type = normalizeVehicleType(Array.isArray(vehicle) ? vehicle[1] : vehicle?.type);
+      if (plate) unique.set(plate, [plate, type]);
+    }
+    return [...unique.values()].sort((a, b) => a[0].localeCompare(b[0], "es"));
+  }
+  function readVehicles() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(VEHICLES_KEY));
+      if (Array.isArray(saved)) return normalizeVehicles(saved);
+    } catch {}
+    return normalizeVehicles(APP_DATA.vehicles);
+  }
+  function writeVehicles(vehicles) {
+    localStorage.setItem(VEHICLES_KEY, JSON.stringify(normalizeVehicles(vehicles)));
+    fillVehicleSelect();
+    renderAdminVehicles();
   }
   const formatDate = (value) => new Intl.DateTimeFormat("es-ES", { dateStyle: "medium", timeZone: "UTC" }).format(new Date(`${value}T00:00:00Z`));
 
@@ -105,13 +129,21 @@
     for (const worker of workers) fields.worker.add(new Option(worker, worker));
     if (workers.includes(selected)) fields.worker.value = selected;
   }
-  function fillSelects() {
-    fillWorkerSelect();
-    for (const [plate, type] of APP_DATA.vehicles) {
+  function fillVehicleSelect() {
+    const selected = fields.vehicle.value;
+    fields.vehicle.replaceChildren(new Option("Seleccionar matrícula…", ""));
+    const vehicles = readVehicles();
+    for (const [plate, type] of vehicles) {
       const option = new Option(plate, plate);
       option.dataset.type = type;
       fields.vehicle.add(option);
     }
+    if (vehicles.some(([plate]) => plate === selected)) fields.vehicle.value = selected;
+    fields.vehicle.dispatchEvent(new Event("change"));
+  }
+  function fillSelects() {
+    fillWorkerSelect();
+    fillVehicleSelect();
   }
   function showAdminMessage(text, error = false) {
     const box = $("adminMessage");
@@ -144,13 +176,40 @@
       list.append(row);
     }
   }
+  function renderAdminVehicles() {
+    if (!adminUnlocked) return;
+    const vehicles = readVehicles();
+    const list = $("adminVehicleList");
+    list.replaceChildren();
+    $("adminVehicleCount").textContent = `${vehicles.length} camiones`;
+    for (const [plate, type] of vehicles) {
+      const row = document.createElement("div");
+      row.className = "admin-worker-row";
+      const name = document.createElement("span");
+      name.textContent = type ? `${plate} · ${type}` : plate;
+      const remove = document.createElement("button");
+      remove.className = "danger-button";
+      remove.type = "button";
+      remove.textContent = "Quitar";
+      remove.addEventListener("click", () => {
+        if (!confirm(`¿Quitar el camión ${plate} de la lista?`)) return;
+        writeVehicles(vehicles.filter(([itemPlate]) => itemPlate !== plate));
+        showAdminMessage("Camión eliminado de este dispositivo.");
+      });
+      row.append(name, remove);
+      list.append(row);
+    }
+  }
   function switchView(view) {
     const admin = view === "admin";
     $("workView").hidden = admin;
     $("adminView").hidden = !admin;
     $("workTabButton").classList.toggle("active", !admin);
     $("adminTabButton").classList.toggle("active", admin);
-    if (admin && adminUnlocked) renderAdminWorkers();
+    if (admin && adminUnlocked) {
+      renderAdminWorkers();
+      renderAdminVehicles();
+    }
     if (admin && !adminUnlocked) $("adminUser").focus();
   }
   function currentRecord() {
@@ -282,6 +341,7 @@
     $("adminLoginForm").hidden = true;
     $("adminManager").hidden = false;
     renderAdminWorkers();
+    renderAdminVehicles();
   });
   $("adminWorkerForm").addEventListener("submit", event => {
     event.preventDefault();
@@ -298,6 +358,28 @@
     fillWorkerSelect();
     renderAdminWorkers();
     showAdminMessage("Lista original restablecida.");
+  });
+  $("adminVehicleForm").addEventListener("submit", event => {
+    event.preventDefault();
+    const plate = normalizePlate($("adminVehiclePlate").value);
+    const type = normalizeVehicleType($("adminVehicleType").value);
+    const vehicles = readVehicles();
+    if (!plate) { showAdminMessage("Escribe una matrícula.", true); return; }
+    if (vehicles.some(([itemPlate]) => itemPlate === plate)) {
+      showAdminMessage("Esa matrícula ya está en la lista.", true);
+      return;
+    }
+    writeVehicles([...vehicles, [plate, type]]);
+    $("adminVehiclePlate").value = "";
+    $("adminVehicleType").value = "";
+    showAdminMessage("Camión añadido en este dispositivo.");
+  });
+  $("resetVehiclesButton").addEventListener("click", () => {
+    if (!confirm("¿Restablecer la lista original de camiones?")) return;
+    localStorage.removeItem(VEHICLES_KEY);
+    fillVehicleSelect();
+    renderAdminVehicles();
+    showAdminMessage("Lista original de camiones restablecida.");
   });
 
   window.addEventListener("beforeinstallprompt", event => {
