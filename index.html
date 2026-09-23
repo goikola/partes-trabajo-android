@@ -74,7 +74,17 @@
             <select id="vehicle" required>
               <option value="">Seleccionar matrícula…</option>
             </select>
-            <small id="vehicleType"></small>
+          </label>
+          <label>
+            <span>Tipo de camión</span>
+            <select id="vehicleType" required>
+              <option value="">Seleccionar tipo…</option>
+              <option value="Rigido">Rigido</option>
+              <option value="Camión y remolque">Camión y remolque</option>
+              <option value="Trailer">Trailer</option>
+              <option value="Mega">Mega</option>
+              <option value="DuoTrailer">DuoTrailer</option>
+            </select>
           </label>
           <label class="wide">
             <span>Ruta</span>
@@ -183,7 +193,14 @@
           </label>
           <label>
             <span>Tipo de camión</span>
-            <input id="adminVehicleType" type="text" autocomplete="off" placeholder="Opcional">
+            <select id="adminVehicleType" required>
+              <option value="">Seleccionar tipo…</option>
+              <option value="Rigido">Rigido</option>
+              <option value="Camión y remolque">Camión y remolque</option>
+              <option value="Trailer">Trailer</option>
+              <option value="Mega">Mega</option>
+              <option value="DuoTrailer">DuoTrailer</option>
+            </select>
           </label>
           <button class="primary" type="submit">Añadir camión</button>
         </form>
@@ -222,7 +239,7 @@
   </template>
 
   <script src="data.js?v=2"></script>
-  <script src="xlsx-export.js?v=2"></script>
-  <script src="app.js?v=9"></script>
+  <script src="xlsx-export.js?v=3"></script>
+  <script src="app.js?v=10"></script>
 </body>
 </html>

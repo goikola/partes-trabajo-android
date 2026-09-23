@@ -5,6 +5,7 @@ Contenido
 - Funciona sin conexión después de instalarse.
 - Guarda los partes en el propio teléfono.
 - Exporta siempre los registros en un archivo Excel real (.xlsx).
+- Cada parte incluye un tipo de camión: Rigido, Camión y remolque, Trailer, Mega o DuoTrailer.
 - Incluye 74 trabajadores y 53 matrículas.
 - Solicita usuario y contraseña una sola vez por dispositivo.
 - Incluye una pestaña de administración protegida para gestionar trabajadores y camiones.

@@ -96,7 +96,7 @@
     return name;
   }
   function build(records, minutesBetween) {
-    const headers = ["FECHA", "TRABAJADOR", "MATRÍCULA", "TIPO VEHÍCULO", "RUTA", "HORA INICIO", "HORA FIN", "DURACIÓN (MIN)", "KM INICIALES", "KM FINALES", "KM REALIZADOS", "OBSERVACIONES"];
+    const headers = ["FECHA", "TRABAJADOR", "MATRÍCULA", "TIPO DE CAMIÓN", "RUTA", "HORA INICIO", "HORA FIN", "DURACIÓN (MIN)", "KM INICIALES", "KM FINALES", "KM REALIZADOS", "OBSERVACIONES"];
     const headerCells = headers.map((value, i) => textCell(`${columnName(i + 1)}1`, value, 1)).join("");
     const rows = records.map((r, index) => {
       const n = index + 2;

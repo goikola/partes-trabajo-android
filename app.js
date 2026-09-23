@@ -9,12 +9,13 @@
   const ACCESS_PASSWORD = "2828";
   const ADMIN_USER = "soraya";
   const ADMIN_EMAIL = "soraya@carnes-erdella.local";
+  const TRUCK_TYPES = ["Rigido", "Camión y remolque", "Trailer", "Mega", "DuoTrailer"];
   const FIREBASE_API_KEY = "AIzaSyBjT_49FR1Fxq6kuph4n8L2SGje1WxYxJs";
   const FIREBASE_DATABASE_URL = "https://partes-trabajo-erdella-default-rtdb.europe-west1.firebasedatabase.app";
   const $ = (id) => document.getElementById(id);
   const form = $("workForm");
   const fields = {
-    id: $("recordId"), date: $("date"), worker: $("worker"), vehicle: $("vehicle"),
+    id: $("recordId"), date: $("date"), worker: $("worker"), vehicle: $("vehicle"), vehicleType: $("vehicleType"),
     route: $("route"), startTime: $("startTime"), endTime: $("endTime"),
     startKm: $("startKm"), endKm: $("endKm"), notes: $("notes")
   };
@@ -176,7 +177,6 @@
     const lastWorker = localStorage.getItem(LAST_WORKER_KEY);
     if (lastWorker && readWorkers().includes(lastWorker)) fields.worker.value = lastWorker;
     $("formTitle").textContent = "Nueva jornada";
-    $("vehicleType").textContent = "";
     $("formMessage").hidden = true;
     refreshCalculations();
   }
@@ -189,6 +189,7 @@
   }
   function fillVehicleSelect() {
     const selected = fields.vehicle.value;
+    const selectedType = fields.vehicleType.value;
     fields.vehicle.replaceChildren(new Option("Seleccionar matrícula…", ""));
     const vehicles = readVehicles();
     for (const [plate, type] of vehicles) {
@@ -198,6 +199,7 @@
     }
     if (vehicles.some(([plate]) => plate === selected)) fields.vehicle.value = selected;
     fields.vehicle.dispatchEvent(new Event("change"));
+    if (selectedType) fields.vehicleType.value = selectedType;
   }
   function fillSelects() {
     fillWorkerSelect();
@@ -284,7 +286,7 @@
       date: fields.date.value,
       worker: fields.worker.value,
       vehicle: fields.vehicle.value,
-      vehicleType: fields.vehicle.selectedOptions[0]?.dataset.type || "",
+      vehicleType: fields.vehicleType.value,
       route: fields.route.value.trim(),
       startTime: fields.startTime.value,
       endTime: fields.endTime.value,
@@ -328,6 +330,7 @@
     fields.id.value = record.id;
     $("formTitle").textContent = "Editar jornada";
     fields.vehicle.dispatchEvent(new Event("change"));
+    fields.vehicleType.value = record.vehicleType || "";
     refreshCalculations();
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -340,7 +343,7 @@
     const r = readRecords().find(item => item.id === id);
     if (!r) return;
     const distance = r.endKm - r.startKm;
-    const text = `Parte ${formatDate(r.date)}\n${r.worker}\n${r.vehicle} · ${r.route}\n${r.startTime}–${r.endTime} (${durationLabel(r.startTime, r.endTime)})\n${distance} km`;
+    const text = `Parte ${formatDate(r.date)}\n${r.worker}\n${r.vehicle} · ${r.vehicleType || "Tipo sin indicar"}\n${r.route}\n${r.startTime}–${r.endTime} (${durationLabel(r.startTime, r.endTime)})\n${distance} km`;
     if (navigator.share) await navigator.share({ title: "Parte de trabajo", text }).catch(() => {});
     else await navigator.clipboard.writeText(text).then(() => alert("Parte copiado al portapapeles."));
   }
@@ -361,7 +364,7 @@
       card.dataset.id = record.id;
       card.querySelector(".record-date").textContent = formatDate(record.date);
       card.querySelector(".record-worker").textContent = record.worker;
-      card.querySelector(".record-plate").textContent = record.vehicle;
+      card.querySelector(".record-plate").textContent = record.vehicleType ? `${record.vehicle} · ${record.vehicleType}` : record.vehicle;
       card.querySelector(".record-route").textContent = record.route;
       card.querySelector(".record-time").textContent = `${record.startTime}–${record.endTime}`;
       card.querySelector(".record-duration").textContent = durationLabel(record.startTime, record.endTime);
@@ -387,7 +390,10 @@
   form.addEventListener("submit", saveRecord);
   $("newButton").addEventListener("click", resetForm);
   [fields.startTime, fields.endTime, fields.startKm, fields.endKm].forEach(el => el.addEventListener("input", refreshCalculations));
-  fields.vehicle.addEventListener("change", () => { $("vehicleType").textContent = fields.vehicle.selectedOptions[0]?.dataset.type || ""; });
+  fields.vehicle.addEventListener("change", () => {
+    const suggestedType = fields.vehicle.selectedOptions[0]?.dataset.type || "";
+    fields.vehicleType.value = TRUCK_TYPES.includes(suggestedType) ? suggestedType : "";
+  });
   $("monthFilter").addEventListener("change", renderRecords);
   $("clearFilter").addEventListener("click", () => { $("monthFilter").value = ""; renderRecords(); });
   $("exportButton").addEventListener("click", exportExcel);
